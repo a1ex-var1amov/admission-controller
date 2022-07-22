@@ -1,0 +1,22 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    app: ocp4-ipi-ns-vwh
+    app.kubernetes.io/component: ocp4-ipi-ns-vwh
+    app.kubernetes.io/instance: ocp4-ipi-ns-vwh
+  name: tools
+  namespace: infra-webhooks
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+  - annotations:
+      openshift.io/imported-from: image-registry.openshift-image-registry.svc:5000/openshift/tools
+    from:
+      kind: DockerImage
+      name: image-registry.openshift-image-registry.svc:5000/openshift/tools
+    importPolicy: {}
+    name: latest
+    referencePolicy:
+      type: Source

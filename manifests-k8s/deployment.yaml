@@ -1,0 +1,26 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: validate
+  namespace: infra-webhooks
+  labels:
+    app: validate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: validate
+  template:
+    metadata:
+      labels:
+        app: validate
+    spec:
+      containers:
+      - name: validate
+        image: alexvsandbox.jfrog.io/demo-builds/alexv-webhook:latest
+        ports:
+        - containerPort: 8080
+        imagePullPolicy: Always
+      imagePullSecrets:
+       - name: regcred

@@ -1,0 +1,64 @@
+name: build-alexv-webhook
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+env:
+  IMAGE_NAME: alexv-webhook
+  SYSDIG_URL: https://us2.app.sysdig.com
+  SYSDIG_SCANNER: new
+  IMAGE_REG: alexvsandbox.jfrog.io
+  IMAGE_REPO: demo-builds
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+
+      - name: Get the Current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:bld-${{ steps.date.outputs.date }}
+      
+      - name: Display local images
+        run: docker images  -a --digests
+
+      - name: Scan Image with Legacy Scanner
+        if: env.SYSDIG_SCANNER == 'legacy'
+        run: | 
+          docker run -u root --rm \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          quay.io/sysdig/secure-inline-scan:2 \
+          --storage-type docker-daemon \
+          ${{ env.IMAGE_NAME }}:bld-${{ steps.date.outputs.date }} \
+          --sysdig-token ${{ secrets.SYSDIG_SEC_API_TOKEN }} \
+          --sysdig-url ${{ env.SYSDIG_URL }}
+
+      - name: Get the New Scanner
+        if: env.SYSDIG_SCANNER == 'new'
+        run: curl -LO "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(curl -L -s https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt)/linux/amd64/sysdig-cli-scanner"
+
+      - name: Make the New Scanner executable
+        if: env.SYSDIG_SCANNER == 'new'
+        run: chmod +x ./sysdig-cli-scanner
+
+      - name: Scan Image with New Scanner
+        if: env.SYSDIG_SCANNER == 'new'
+        env:
+          SECURE_API_TOKEN: ${{ secrets.SYSDIG_SEC_API_TOKEN }}
+        run: ./sysdig-cli-scanner --apiurl ${{ env.SYSDIG_URL }} ${{ env.IMAGE_NAME }}:bld-${{ steps.date.outputs.date }}
+
+      - name: Login to JFrog
+        run: docker login ${{ env.IMAGE_REG }} -u ${{ secrets.JGROG_USER}} -p ${{ secrets.JFROG_API_TOKEN}}
+
+      - name: Tag the Image
+        run: docker tag ${{ env.IMAGE_NAME }}:bld-${{ steps.date.outputs.date }} ${{ env.IMAGE_REG }}/${{ env.IMAGE_REPO }}/${{ env.IMAGE_NAME }}:latest
+      
+      - name: Push the Image
+        run: docker push ${{ env.IMAGE_REG }}/${{ env.IMAGE_REPO }}/${{ env.IMAGE_NAME }}:latest

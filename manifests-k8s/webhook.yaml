@@ -1,0 +1,33 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: validate.infra-webhooks.svc.cluster.local
+webhooks:
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURiVENDQWxXZ0F3SUJBZ0lVQnVUVkk2L1dYbituY2krdzBtMENKUkFmZlpvd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1JqRWtNQ0lHQTFVRUF3d2JkbUZzYVdSaGRHVXVhVzVtY21FdGQyVmlhRzl2YTNNdWMzWmpNUXN3Q1FZRApWUVFHRXdKVlV6RVJNQThHQTFVRUJ3d0lWbUZzYUdGc2JHRXdIaGNOTWpJd056SXhNREF3TnpRNVdoY05Nak13Ck56RXlNREF3TnpRNVdqQkdNU1F3SWdZRFZRUUREQnQyWVd4cFpHRjBaUzVwYm1aeVlTMTNaV0pvYjI5cmN5NXoKZG1NeEN6QUpCZ05WQkFZVEFsVlRNUkV3RHdZRFZRUUhEQWhXWVd4b1lXeHNZVENDQVNJd0RRWUpLb1pJaHZjTgpBUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTCtnWTc2anJ1dStjU0RBdmM3QllxQmtpZkRSN0tkYVVkWUg4ZEVKCmdwWXcrOHpaOGVSVXcwT3poZ2pwOWtMSVBmcEpueVRtVWVjVS82WGpXZmhSakhCVHhDM0pGUU8yR1psQTFXYTcKNlRncEM2eWMrSlZVYWFyWGZYT3NLVGtRZ0tCZkFTSzBJWDRKR0lVQkNZaVhsTzhpM1hsVEh6RkpaMVZEa21UegpUK1k4RHVlTTExSnl5aXJnbjlxWG9NMlZERUpOZ3VhYXNDWjhVeHhlQ0drK3BBcVlaaHBLamVDSHEyR0RUbVV0CnhPYUhJRkp1dVpValN2bTVOVHNVb3FkWFJnL1NqMFZrOGlqc3R4RUppSkdZbDJXdk5oZ2hDQmp3UElReDd5b0EKZmsxeGJ2Z2ZTRXRWVnNGdml2N0s1MHJaT2k4RHB5ZStmM0x5K1RodS82TlRFcU1DQXdFQUFhTlRNRkV3SFFZRApWUjBPQkJZRUZQMDNLd0xOUGV2RkpqTjRVMkFKWWxma3RaVXlNQjhHQTFVZEl3UVlNQmFBRlAwM0t3TE5QZXZGCkpqTjRVMkFKWWxma3RaVXlNQThHQTFVZEV3RUIvd1FGTUFNQkFmOHdEUVlKS29aSWh2Y05BUUVMQlFBRGdnRUIKQUI3T1lVbnB4bDRKU3E4b0pvd1ZGWnp1YlJOY21vaUhzaVB2NWJyUWo3QThJK2djWjNSYUxWTU8xS3JVNlUxegpOdCsxTk5iL1BNZFM3bG1Ba0ltZ0hyNzBwdzhWMGx2MU00bG9NSXRYZksxWHZ3amlGT2NqRzdsOS9UTW1wSzlNCks3MWZZV0NiTUYrcnJiK2p4SWZJSVROazFpN3p2UVFHWmxZVVZYS3JBc1JGd2NteGlLdDNPL1FRQlhaM25OcTYKc1pnWFhQV29mM3VBbHhENHI0NG5LZlRqdG4yOHlSbUdSOThFanRhbHp2VDNhV1dhcUw5ZHZDbjZGYitndlJvRwpvVHU5K2pUL2V1cHJRTUNaU1JVZ1czbzFRWUx1ZjRhdXRzNzkzMndhSVYyaVdaeVJmS1dTMzBLUStVMk8zTWxPCjRoL01RdGthM0EweXJiaVhuS2ZRM05rPQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+    service:
+      name: validate
+      namespace: infra-webhooks
+      path: /validate/
+      port: 8443
+  failurePolicy: Fail
+  matchPolicy: Equivalent
+  name: validate.infra-webhooks.svc.cluster.local
+  namespaceSelector: {}
+  objectSelector: {}
+  rules:
+  - apiGroups:
+    - '*'
+    apiVersions:
+    - '*'
+    operations:
+    - DELETE
+    resources:
+    - projects
+    - namespaces
+    scope: '*'
+  sideEffects: None
+  timeoutSeconds: 10

@@ -1,0 +1,32 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    app: ocp4-ipi-ns-vwh
+  name: ocp4-ipi-ns-vwh
+  namespace: infra-webhooks
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: null
+  triggers:
+    - type: "ConfigChange"
+  output:
+    to:
+      kind: ImageStreamTag
+      name: ocp4-ipi-ns-vwh:latest
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    git:
+      uri: https://
+    sourceSecret:
+      name: bitbucket
+    type: Git
+  strategy:
+    dockerStrategy:
+      from:
+        kind: ImageStreamTag
+        name: tools:latest
+    type: Docker
+  successfulBuildsHistoryLimit: 5
