@@ -23,8 +23,14 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
+      - name: Download Linter
+        run: curl -LO "https://github.com/hadolint/hadolint/releases/download/v2.10.0/hadolint-Linux-x86_64"
+
+      - name: Make Linter executable
+        run: chmod +x ./hadolint-Linux-x86_64
+
       - name: Lint Dockerfile
-        run: docker run --rm -i hadolint/hadolint < Dockerfile
+        run: ./hadolint-Linux-x86_64 Dockerfile
 
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:bld-${{ steps.date.outputs.date }}
