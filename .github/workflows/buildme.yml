@@ -23,9 +23,12 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
+      - name: Lint Dockerfile
+        run: docker run --rm -i hadolint/hadolint < Dockerfile
+
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:bld-${{ steps.date.outputs.date }}
-      
+
       - name: Display local images
         run: docker images  -a --digests
 
