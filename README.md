@@ -7,7 +7,10 @@ The required label is set through environment variable in the webhook deployment
 ```
 env:
 - name: LABEL
-  value: development
+  value: delete-me
+  
+- name: VALUE
+  value: true
 ```
 
 # SSL 
